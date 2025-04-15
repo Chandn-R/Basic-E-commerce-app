@@ -5,6 +5,7 @@ export const getAllProducts = async (req, res) => {
         const products = await sql`
         SELECT * FROM products
         `;
+        // console.log("Headers already sent?", res.headersSent);
         res.status(200).json({ success: true, data: products });
     } catch (error) {
         console.log("Error fetching products", error);

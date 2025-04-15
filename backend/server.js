@@ -5,8 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import productRoutes from "./routes/productRoutes.js";
 import { sql } from "./config/db.js"
-import arcjet, { shield, detectBot, tokenBucket } from "@arcjet/node";
 import { isSpoofedBot } from "@arcjet/inspect";
+import { aj } from "./lib/arcjet.js"
 
 dotenv.config();
 
@@ -26,23 +26,19 @@ app.use(async (req, res, next) => {
 
         if (decision.isDenied()) {
             if (decision.reason.isRateLimit()) {
-                res.writeHead(429, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "Too Many Requests" }));
+                return res.status(429).json({ error: "Too Many Requests" });
             } else if (decision.reason.isBot()) {
-                res.writeHead(403, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "No bots allowed" }));
+                return res.status(403).json({ error: "No bots allowed" });
             } else {
-                res.writeHead(403, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: "Forbidden" }));
+                return res.status(403).json({ error: "Forbidden" });
             }
-        } else if (decision.results.some(isSpoofedBot)) {
-            res.writeHead(403, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ error: "Forbidden" }));
-        } else {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ message: "Hello World" }));
         }
-        next()
+
+        if (decision.results.some(isSpoofedBot)) {
+            return res.status(403).json({ error: "Forbidden - Spoofed Bot" });
+        }
+
+        next();
     } catch (error) {
         console.log("Error in Arcjet middleware", error);
         next(error);
@@ -51,16 +47,13 @@ app.use(async (req, res, next) => {
 });
 
 
-
-app.use("/api/products", productRoutes);
-
 async function connectDB() {
     try {
         await sql`
         CREATE TABLE IF NOT EXISTS products(
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        image VARCHAR(255) NOT NULL,
+        image VARCHAR(555) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
         )`;
@@ -80,3 +73,5 @@ connectDB()
     .catch((error) => {
         console.log("Error starting server", error);
     })
+
+app.use("/api/products", productRoutes);
