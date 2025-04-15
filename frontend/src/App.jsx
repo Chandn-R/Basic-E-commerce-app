@@ -2,11 +2,7 @@ import Navbar from "./components/Navbar.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ProductPage from "./pages/ProductPage.jsx";
 import { Routes, Route } from "react-router-dom";
-// import { useThemeStore } from "./store/useThemeStore";
 import { Toaster } from "react-hot-toast";
-
-
-
 
 function App() {
 
