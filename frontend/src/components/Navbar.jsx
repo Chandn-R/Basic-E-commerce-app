@@ -6,7 +6,7 @@ import { useProductStore } from "../store/useProductStore";
 const Navbar = () => {
   const { pathname } = useResolvedPath();
   const isHomePage = pathname === "/";
-  const {products} = useProductStore
+  const {products} = useProductStore();
 
   return (
     <header className="sticky top-0 z-50 bg-indigo-100/90 backdrop-blur-md border-b border-indigo-200 shadow">
