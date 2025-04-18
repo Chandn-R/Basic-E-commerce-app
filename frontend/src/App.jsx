@@ -8,8 +8,7 @@ function App() {
 
   return (
     <>
-    {/* data-theme={theme} */}
-      <div className="min-h-screen bg-base-200 transition-colors duration-300" data-theme="forset">
+      <div className="min-h-screen bg-base-200 transition-colors duration-300">
         <Navbar />
 
         <Routes>
