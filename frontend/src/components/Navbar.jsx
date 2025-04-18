@@ -1,10 +1,12 @@
 import React from "react";
 import { Link, useResolvedPath } from "react-router-dom";
 import { ShoppingBagIcon, ShoppingCartIcon } from "lucide-react";
+import { useProductStore } from "../store/useProductStore";
 
 const Navbar = () => {
   const { pathname } = useResolvedPath();
   const isHomePage = pathname === "/";
+  const {products} = useProductStore
 
   return (
     <header className="sticky top-0 z-50 bg-indigo-100/90 backdrop-blur-md border-b border-indigo-200 shadow">
@@ -14,7 +16,7 @@ const Navbar = () => {
           {/* LOGO */}
           <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <ShoppingCartIcon className="w-7 h-7 text-indigo-600" />
-            <span className="text-2xl font-semibold text-gray-800 tracking-wide font-mono">
+            <span className="text-2xl font-semibold text-gray-800 tracking-wide font-sans">
               MyStore
             </span>
           </Link>
@@ -31,7 +33,7 @@ const Navbar = () => {
             <button className="relative p-2 rounded-full hover:bg-indigo-200 transition-colors">
               <ShoppingBagIcon className="w-6 h-6 text-gray-800" />
               <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                10
+                {products.length}
               </span>
             </button>
           )}
