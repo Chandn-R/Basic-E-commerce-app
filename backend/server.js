@@ -1,22 +1,28 @@
 import express from "express";
 import morgan from "morgan";
-import helmet from "helmet";
+import helmet, { contentSecurityPolicy } from "helmet";
 import cors from "cors";
 import dotenv from "dotenv";
 import productRoutes from "./routes/productRoutes.js";
 import { sql } from "./config/db.js"
 import { isSpoofedBot } from "@arcjet/inspect";
 import { aj } from "./lib/arcjet.js"
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev")); // Logs HTTP requests to the console
-app.use(helmet()); // Sets various HTTP headers for security
+app.use(
+    helmet({
+        contentSecurityPolicy: false
+    })
+); // Sets various HTTP headers for security
 app.use(async (req, res, next) => {
     try {
         const decision = await aj.protect(req, {
@@ -45,6 +51,14 @@ app.use(async (req, res, next) => {
     }
 
 });
+app.use("/api/products", productRoutes);
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "frontend", "dist")));
+    app.get(/^\/(?!api).*/, (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    });
+}
 
 
 async function connectDB() {
@@ -74,4 +88,3 @@ connectDB()
         console.log("Error starting server", error);
     })
 
-app.use("/api/products", productRoutes);
