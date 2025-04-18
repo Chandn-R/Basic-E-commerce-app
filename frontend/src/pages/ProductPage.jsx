@@ -25,6 +25,7 @@ const ProductPage = () => {
   const handleDelete = () => {
     deleteProduct(id);
     navigate("/");
+    resetFormData();
   };
 
   if (loading) {
@@ -48,7 +49,10 @@ const ProductPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <button
-        onClick={() => navigate("/")}
+        onClick={() => {
+          navigate("/");
+          resetFormData();
+        }}
         className="flex items-center text-indigo-600 hover:text-indigo-800 transition-colors mb-8 text-sm font-medium"
       >
         <ArrowLeftIcon className="w-4 h-4 mr-2" />
